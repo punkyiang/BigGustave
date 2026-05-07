@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigGustave.Tests", "BigGust
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BigGustave.Timing", "BigGustave.Timing\BigGustave.Timing.csproj", "{A21AB0A9-6AB4-49F4-8A04-89A4EDC0C842}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SierpinskiTriangle", "SierpinskiTriangle\SierpinskiTriangle.csproj", "{5B861079-61CB-46C5-BBC9-9DC9EBD8543C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{A21AB0A9-6AB4-49F4-8A04-89A4EDC0C842}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A21AB0A9-6AB4-49F4-8A04-89A4EDC0C842}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A21AB0A9-6AB4-49F4-8A04-89A4EDC0C842}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B861079-61CB-46C5-BBC9-9DC9EBD8543C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B861079-61CB-46C5-BBC9-9DC9EBD8543C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B861079-61CB-46C5-BBC9-9DC9EBD8543C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B861079-61CB-46C5-BBC9-9DC9EBD8543C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

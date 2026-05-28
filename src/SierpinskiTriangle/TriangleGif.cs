@@ -12,48 +12,49 @@ public static class TriangleGif
         int width = (int)Math.Pow(2, maxCycles);
         int height = width;
 
-        var builder = PngBuilder.Create(width, height, false);
 
-        var black = new Pixel(0);
-        var white = new Pixel(255);
+        // using var gif = AnimatedGif.AnimatedGif.Create("mygif.gif", 200);
 
-        for (int i = 0; i < width; i++)
-        for (int j = 0; j < height; j++)
-            builder.SetPixel(black, i, j);
-
-        using var gif = AnimatedGif.AnimatedGif.Create("mygif.gif", 200);
-
-        for (int i = 0; i < maxCycles; i++)
+        for (int index = 0; index < 5; index++)
         {
-            DrawRecursively(0, new Point(0, 0), new Point(width, height), 4, i);
-            var filename = $"file{i}.png";
+            var builder = PngBuilder.Create(width, height, false);
+
+            var black = new Pixel(255);
+            var white = new Pixel(0);
+
+            for (int j = 0; j < width; j++)
+            for (int k = 0; k < height; k++)
+                builder.SetPixel(black, j, k);
+
+            DrawRecursively(0, new Point(0, 0), new Point(width, height), 4, index);
+            var filename = $"file{index}.png";
             File.WriteAllBytes(filename, builder.Save());
-            var img = Image.FromFile(filename);
-            gif.AddFrame(img, quality: GifQuality.Grayscale);
+            // var img = Image.FromFile(filename);
+            // gif.AddFrame(img, quality: GifQuality.Grayscale);
+            
+            void DrawRecursively(int cycle, Point outerCorner, Point innerCorner, int squareToIgnore, int maxCycleCount) {
+                if (cycle >= maxCycleCount) return;
+
+                int minX = outerCorner.X;
+                int minY = outerCorner.Y;
+                int midX = (outerCorner.X + innerCorner.X) / 2;
+                int midY = (outerCorner.Y + innerCorner.Y) / 2;
+                int maxX = innerCorner.X < width ? innerCorner.X : width - 1;
+                int maxY = innerCorner.Y < height ? innerCorner.Y : height - 1;
+    
+                // builder.DrawVerticalLine(white, midX, minY, midY);
+                // builder.DrawHorizontalLine(white, minX, midX, midY);
+    
+                builder.DrawRectangle(white, new Point(midX, midY), new Point(maxX, maxY));
+
+                if (squareToIgnore != 1) DrawRecursively(cycle + 1, new Point(minX, minY), new Point(midX, midY), squareToIgnore, maxCycleCount);
+                if (squareToIgnore != 2) DrawRecursively(cycle + 1, new Point(midX, minY), new Point(maxX, midY), squareToIgnore, maxCycleCount);
+                if (squareToIgnore != 3) DrawRecursively(cycle + 1, new Point(minX, midY), new Point(midX, maxY), squareToIgnore, maxCycleCount);
+                if (squareToIgnore != 4) DrawRecursively(cycle + 1, new Point(midX, midY), new Point(maxX, maxY), squareToIgnore, maxCycleCount);
+            }
         }
         
         return;
-
-        void DrawRecursively(int cycle, Point outerCorner, Point innerCorner, int squareToIgnore, int maxCycleCount) {
-            if (cycle >= maxCycleCount) return;
-
-            int minX = outerCorner.X;
-            int minY = outerCorner.Y;
-            int midX = (outerCorner.X + innerCorner.X) / 2;
-            int midY = (outerCorner.Y + innerCorner.Y) / 2;
-            int maxX = innerCorner.X;
-            int maxY = innerCorner.Y;
-    
-            builder.DrawVerticalLine(white, midX, minY, midY);
-            builder.DrawHorizontalLine(white, minX, midX, midY);
-    
-            // painter.drawRectangle(new Point(midX, midY), new Point(maxX, maxY));
-
-            if (squareToIgnore != 1) DrawRecursively(cycle + 1, new Point(minX, minY), new Point(midX, midY), squareToIgnore, maxCycleCount);
-            if (squareToIgnore != 2) DrawRecursively(cycle + 1, new Point(midX, minY), new Point(maxX, midY), squareToIgnore, maxCycleCount);
-            if (squareToIgnore != 3) DrawRecursively(cycle + 1, new Point(minX, midY), new Point(midX, maxY), squareToIgnore, maxCycleCount);
-            if (squareToIgnore != 4) DrawRecursively(cycle + 1, new Point(midX, midY), new Point(maxX, maxY), squareToIgnore, maxCycleCount);
-        }
     }
 
 }

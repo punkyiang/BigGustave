@@ -1,6 +1,6 @@
 ﻿using SierpinskiTriangle;
 
-// TriangleGif.Run();
+TriangleGif.Run();
 // CircleRender.Run();
 // CircleGradient.Run();
-GameOfLife.Run();
+// GameOfLife.Run();

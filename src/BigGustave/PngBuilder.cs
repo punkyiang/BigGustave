@@ -168,11 +168,11 @@
                         colorCounts[val]++;
                     }
 
-                    colorCounts[backgroundColorInt]--;
-                    if (colorCounts[backgroundColorInt] == 0)
-                    {
-                        colorCounts.Remove(backgroundColorInt);
-                    }
+                    // colorCounts[backgroundColorInt]--;
+                    // if (colorCounts[backgroundColorInt] == 0)
+                    // {
+                    //     colorCounts.Remove(backgroundColorInt);
+                    // }
                 }
 
                 if (colorCounts.Count > 256)

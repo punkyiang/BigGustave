@@ -8,13 +8,18 @@ public static class TriangleGif
 {
     public static void Run()
     {
+        var filenamePattern = "file";
+        
+        if (!Directory.Exists(filenamePattern)) 
+            Directory.CreateDirectory(filenamePattern);
+
         const int maxCycles = 11;
         int width = (int)Math.Pow(2, maxCycles);
         int height = width;
         
         var builder = PngBuilder.Create(width, height, true);
             
-        var gold = new Pixel(192);
+        var white = new Pixel(255);
         var transparent = new Pixel(0);
 
 
@@ -24,11 +29,13 @@ public static class TriangleGif
         {
             for (int j = 0; j < width; j++)
             for (int k = 0; k < height; k++)
-                builder.SetPixel(gold, j, k);
+                builder.SetPixel(white, j, k);
+
 
             DrawRecursively(0, new Point(width, 0), new Point(0, height), index);
-            var filename = $"silverblack{index}.png";
+            var filename = $"{filenamePattern}/filenamePattern{index}.png";
             var bytes = builder.Save();
+            
             File.WriteAllBytes(filename, bytes);
             builder = PngBuilder.FromPngBytes(bytes);
             // var img = Image.FromFile(filename);

@@ -9,15 +9,15 @@ public static class TriangleGif
     public static void Run()
     {
         var filenamePattern = "goldleaf";
-        
-        if (!Directory.Exists(filenamePattern)) 
+
+        if (!Directory.Exists(filenamePattern))
             Directory.CreateDirectory(filenamePattern);
 
         const int maxCycles = 11;
         int width = (int)Math.Pow(2, maxCycles);
         int height = width;
-        
-            
+
+
         var white = new Pixel(255, 215, 0);
         var black = new Pixel(0, 0, 0, 0, true);
 
@@ -27,23 +27,24 @@ public static class TriangleGif
         for (int index = 0; index < maxCycles; index++)
         {
             var builder = PngBuilder.Create(width, height, true);
-            
+
             for (int j = 0; j < width; j++)
-            for (int k = 0; k < height; k++)
-                builder.SetPixel(white, j, k);
+                for (int k = 0; k < height; k++)
+                    builder.SetPixel(white, j, k);
 
 
             DrawRecursively(0, new Point(width, 0), new Point(0, height), index);
             var filename = $"{filenamePattern}/{filenamePattern}{index}.png";
             var bytes = builder.Save();
-            
+
             File.WriteAllBytes(filename, bytes);
             // builder = PngBuilder.FromPngBytes(bytes);
 
             // var img = Image.FromFile(filename);
             // gif.AddFrame(img, quality: GifQuality.Grayscale);
-            
-            void DrawRecursively(int cycle, Point outerCorner, Point innerCorner, int maxCycleCount) {
+
+            void DrawRecursively(int cycle, Point outerCorner, Point innerCorner, int maxCycleCount)
+            {
                 if (cycle >= maxCycleCount) return;
 
                 int minX = outerCorner.X;
@@ -52,7 +53,7 @@ public static class TriangleGif
                 int midY = (outerCorner.Y + innerCorner.Y) / 2;
                 int maxX = innerCorner.X;// < width ? innerCorner.X : width - 1;
                 int maxY = innerCorner.Y;// < height ? innerCorner.Y : height - 1;
-            
+
                 int maxXToDraw = maxX < width ? maxX : width - 1;
                 int maxYToDraw = maxY < height ? maxY : height - 1;
 
@@ -61,7 +62,7 @@ public static class TriangleGif
                     builder.DrawVerticalLine(black, midX, minY, midY);
                     builder.DrawHorizontalLine(black, minX, midX, midY);
                 }
-    
+
                 builder.DrawRectangle(black, new Point(midX, midY), new Point(maxXToDraw, maxYToDraw));
 
                 DrawRecursively(cycle + 1, new Point(minX, minY), new Point(midX, midY), maxCycleCount);
@@ -69,9 +70,9 @@ public static class TriangleGif
                 DrawRecursively(cycle + 1, new Point(minX, midY), new Point(midX, maxY), maxCycleCount);
             }
         }
-        
+
         return;
-        
+
 
     }
 }
@@ -86,14 +87,14 @@ public static class PngExtensions
         var maxX = xFrom > xTo ? xFrom : xTo;
         for (var x = minX; x <= maxX; x++) builder.SetPixel(color, x, y);
     }
-    
+
     public static void DrawVerticalLine(this PngBuilder builder, Pixel color, int x, int yFrom, int yTo)
     {
         var minY = yFrom < yTo ? yFrom : yTo;
         var maxY = yFrom > yTo ? yFrom : yTo;
         for (var y = minY; y <= maxY; y++) builder.SetPixel(color, x, y);
     }
-    
+
     public static void DrawRectangle(this PngBuilder builder, Pixel color, Point from, Point to)
     {
         var minX = from.X < to.X ? from.X : to.X;
@@ -102,7 +103,7 @@ public static class PngExtensions
         var maxY = from.Y > to.Y ? from.Y : to.Y;
 
         for (var x = minX; x <= maxX; x++)
-        for (var y = minY; y <= maxY; y++) 
-            builder.SetPixel(color, x, y);
+            for (var y = minY; y <= maxY; y++)
+                builder.SetPixel(color, x, y);
     }
 }

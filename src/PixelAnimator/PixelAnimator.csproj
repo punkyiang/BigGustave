@@ -17,4 +17,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="AnimatedGif" Version="1.0.5" />
+    </ItemGroup>
+
 </Project>

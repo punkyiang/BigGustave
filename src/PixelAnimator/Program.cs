@@ -1,7 +1,6 @@
-﻿using BigGustave;
+﻿using System.Diagnostics;
+using BigGustave;
 using PixelAnimator;
-
-Console.WriteLine("Hello, World!");
 
 var ogPng = Png.Open("danger sign.png");
 
@@ -18,53 +17,37 @@ var pixelArray = new PixelEdge[ogPng.Width, ogPng.Height];
 var fullPixel = PixelEdge.Up | PixelEdge.Down | PixelEdge.Left | PixelEdge.Right;
 
 //do a colour check and copy data
-for (var i = 0; i < ogPng.Width; i++)
+for (var y = 0; y < ogPng.Height; y++)
+for (var x = 0; x < ogPng.Width; x++)
 {
-    for (var j = 0; j < ogPng.Height; j++)
-    {
-        var pixel = ogPng.GetPixel(i, j);
-        if (!pixel.Equals(black) && !pixel.Equals(white))
-        {
-            Console.WriteLine($"Incorrect color found: {pixel} at [{i}, {j}]");
-            return;
-        }
+    var pixel = ogPng.GetPixel(x, y);
+    if (!pixel.Equals(black) && !pixel.Equals(white))
+        throw new Exception($"Incorrect color found: {pixel} at [{y}, {x}]");
 
-        if (pixel.Equals(white))
-        {
-            pixelArray[i, j] = fullPixel;
-
-            Console.Write("#");
-        }
-        else
-        {
-            Console.Write(" ");
-        }
-    }
-
-    Console.WriteLine();
+    if (pixel.Equals(white)) pixelArray[x, y] = fullPixel;
 }
 
-Console.WriteLine();
-
-
 //set already known pixel edges
-for (var i = 0; i < ogPng.Width; i++)
+for (var y = 0; y < ogPng.Height; y++)
 {
-    for (var j = 0; j < ogPng.Height; j++)
+    for (var x = 0; x < ogPng.Width; x++)
     {
-        if (i == 0 || pixelArray[i - 1, j] == 0)
-            pixelArray[i, j] &= fullPixel ^ PixelEdge.Left;
+        if (x == 0 || pixelArray[x - 1, y] == 0)
+            pixelArray[x, y] &= fullPixel ^ PixelEdge.Left;
 
-        if (i == ogPng.Width - 1 || pixelArray[i + 1, j] == 0)
-            pixelArray[i, j] &= fullPixel ^ PixelEdge.Right;
+        if (x == ogPng.Width - 1 || pixelArray[x + 1, y] == 0)
+            pixelArray[x, y] &= fullPixel ^ PixelEdge.Right;
 
-        if (j == 0 || pixelArray[i, j - 1] == 0)
-            pixelArray[i, j] &= fullPixel ^ PixelEdge.Up;
+        if (y == 0 || pixelArray[x, y - 1] == 0)
+            pixelArray[x, y] &= fullPixel ^ PixelEdge.Up;
 
-        if (j == ogPng.Height - 1 || pixelArray[i, j + 1] == 0)
-            pixelArray[i, j] &= fullPixel ^ PixelEdge.Down;
+        if (y == ogPng.Height - 1 || pixelArray[x, y + 1] == 0)
+            pixelArray[x, y] &= fullPixel ^ PixelEdge.Down;
 
-        Console.Write(((int)pixelArray[i, j]).ToString("D2") + ' ');
+        if (pixelArray[x, y] == 0)
+            Console.Write("   ");
+        else
+            Console.Write(((int)pixelArray[x, y]).ToString("D2") + ' ');
     }
     Console.WriteLine();
 }
@@ -72,37 +55,30 @@ Console.WriteLine();
 
 var builder = PngBuilder.Create(ogPng.Width * 2, ogPng.Height * 2, false);
 
-for (var i = 0; i < ogPng.Width; i++)
+//paint in the new pixels based on edge data
+for (var y = 0; y < ogPng.Height; y++)
+for (var x = 0; x < ogPng.Width; x++)
 {
-    for (var j = 0; j < ogPng.Height; j++)
-    {
-        var pixel = pixelArray[i, j];
+    var pixel = pixelArray[x, y];
 
-        if (pixel.HasFlag(PixelEdge.Up) || pixel.HasFlag(PixelEdge.Left))
-            SetPixelLocal(builder, white, i * 2, j * 2);
-        else
-            SetPixelLocal(builder, black, i * 2, j * 2);
-
-        if (pixel.HasFlag(PixelEdge.Up) || pixel.HasFlag(PixelEdge.Right))
-            SetPixelLocal(builder, white, i * 2 + 1, j * 2);
-        else
-            SetPixelLocal(builder, black, i * 2 + 1, j * 2);
-
-        if (pixel.HasFlag(PixelEdge.Down) || pixel.HasFlag(PixelEdge.Left))
-            SetPixelLocal(builder, white, i * 2, j * 2 + 1);
-        else
-            SetPixelLocal(builder, black, i * 2, j * 2 + 1);
-
-        // if (pixel.HasFlag(PixelEdge.Down) || pixel.HasFlag(PixelEdge.Right))
-        if (pixel > 0)
-            SetPixelLocal(builder, white, i * 2 + 1, j * 2 + 1);
-        else
-            SetPixelLocal(builder, black, i * 2 + 1, j * 2 + 1);
-    }
-    
-    Console.WriteLine();
+    builder.SetPixel(pixel.HasFlag(PixelEdge.Up | PixelEdge.Left) ? white : black, x * 2, y * 2);
+    builder.SetPixel(pixel.HasFlag(PixelEdge.Up) ? white : black, x * 2 + 1, y * 2);
+    builder.SetPixel(pixel.HasFlag(PixelEdge.Left) ? white : black, x * 2, y * 2 + 1);
+    // builder.SetPixel(pixel.HasFlag(PixelEdge.Down | PixelEdge.Right) ? white : black, x * 2 + 1, y * 2 + 1);
+    builder.SetPixel(pixel > 0 ? white : black, x * 2 + 1, y * 2 + 1);
 }
+
 File.WriteAllBytes("result.png", builder.Save());
+
+
+//open image viewer
+var psi = new ProcessStartInfo
+{
+    FileName = @"result.png",
+    UseShellExecute = true
+};
+Process.Start(psi);
+
 
 void SetPixelLocal(PngBuilder builder, Pixel pixel, int x, int y)
 {

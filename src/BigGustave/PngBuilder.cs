@@ -16,9 +16,9 @@
         private const byte ChecksumBits = 1;
 
         private readonly byte[] rawData;
-        private readonly bool hasAlphaChannel;
-        private readonly int width;
-        private readonly int height;
+        public readonly bool HasAlphaChannel;
+        public readonly int Width;
+        public readonly int Height;
         private readonly int bytesPerPixel;
 
         private bool hasTooManyColorsForPalette;
@@ -131,9 +131,9 @@
         private PngBuilder(byte[] rawData, bool hasAlphaChannel, int width, int height, int bytesPerPixel)
         {
             this.rawData = rawData;
-            this.hasAlphaChannel = hasAlphaChannel;
-            this.width = width;
-            this.height = height;
+            this.HasAlphaChannel = hasAlphaChannel;
+            this.Width = width;
+            this.Height = height;
             this.bytesPerPixel = bytesPerPixel;
 
             backgroundColorInt = PixelToColorInt(0, 0, 0, hasAlphaChannel ? (byte)0 : byte.MaxValue);
@@ -181,13 +181,13 @@
                 }
             }
 
-            var start = (y * ((width * bytesPerPixel) + 1)) + 1 + (x * bytesPerPixel);
+            var start = (y * ((Width * bytesPerPixel) + 1)) + 1 + (x * bytesPerPixel);
 
             rawData[start++] = pixel.R;
             rawData[start++] = pixel.G;
             rawData[start++] = pixel.B;
 
-            if (hasAlphaChannel)
+            if (HasAlphaChannel)
             {
                 rawData[start] = pixel.A;
             }
@@ -284,7 +284,7 @@
             var dataLength = rawData.Length;
             var bitDepth = 8;
 
-            if (!hasTooManyColorsForPalette && !hasAlphaChannel)
+            if (!hasTooManyColorsForPalette && !HasAlphaChannel)
             {
                 var paletteColors = colorCounts.OrderByDescending(x => x.Value).Select(x => x.Key).ToList();
                 bitDepth = paletteColors.Count > 16 ? 8 : 4;
@@ -304,14 +304,14 @@
 
                 var rawDataIndex = 0;
 
-                for (var y = 0; y < height; y++)
+                for (var y = 0; y < Height; y++)
                 {
                     // None filter - we don't use filtering for palette images.
                     rawData[rawDataIndex++] = 0;
 
-                    for (var x = 0; x < width; x++)
+                    for (var x = 0; x < Width; x++)
                     {
-                        var index = ((y * width * bytesPerPixel) + y + 1) + (x * bytesPerPixel);
+                        var index = ((y * Width * bytesPerPixel) + y + 1) + (x * bytesPerPixel);
 
                         var r = rawData[index++];
                         var g = rawData[index++];
@@ -358,12 +358,12 @@
             stream.WriteChunkLength(13);
             stream.WriteChunkHeader(ImageHeader.HeaderBytes);
 
-            StreamHelper.WriteBigEndianInt32(stream, width);
-            StreamHelper.WriteBigEndianInt32(stream, height);
+            StreamHelper.WriteBigEndianInt32(stream, Width);
+            StreamHelper.WriteBigEndianInt32(stream, Height);
             stream.WriteByte((byte)bitDepth);
 
             var colorType = ColorType.ColorUsed;
-            if (hasAlphaChannel)
+            if (HasAlphaChannel)
             {
                 colorType |= ColorType.AlphaChannelUsed;
             }
@@ -478,7 +478,7 @@
                 return;
             }
 
-            var bytesPerScanline = 1 + (bytesPerPixel * width);
+            var bytesPerScanline = 1 + (bytesPerPixel * Width);
             var scanlineCount = rawData.Length / bytesPerScanline;
 
             var scanData = new byte[bytesPerScanline - 1];

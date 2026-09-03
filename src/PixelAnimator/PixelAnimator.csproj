@@ -15,10 +15,13 @@
       <None Update="danger sign.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="brackets.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AnimatedGif" Version="1.0.5" />
+      <PackageReference Include="SixLabors.ImageSharp" Version="4.1.1" />
     </ItemGroup>
 
 </Project>

@@ -1,34 +1,61 @@
 ﻿using System.Diagnostics;
-using AnimatedGif;
 using BigGustave;
 using PixelAnimator;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.PixelFormats;
 
-var ogPng = Png.Open("danger sign.png");
-var ogPngBuilder = PngBuilder.FromPng(ogPng);
+foreach (var value in args)
+{
+    Console.WriteLine($"value: {value}");
+}
 
-var emptyFrame = PngBuilder.Create(ogPng.Width, ogPng.Height, ogPng.HasAlphaChannel);
-var firstFrame = ogPngBuilder.GetFirstFrame();
-var lastFrame = ogPngBuilder.GetLastFrame();
+var ogPng = Png.Open("brackets.png");
+
+const int scale = 2;
+
+var emptyFrame = PngBuilder.Create(ogPng.Width * 2 * scale, ogPng.Height * 2 * scale, ogPng.HasAlphaChannel);
+var firstFrame = ogPng.GetFirstFrame().Enlarge(scale);
+var lastFrame = ogPng.GetLastFrame().Enlarge(scale);
+var bigSign = ogPng.Enlarge(2 * scale);
 
 File.WriteAllBytes("1.png", emptyFrame.Save());
 File.WriteAllBytes("2.png", firstFrame.Save());
+File.WriteAllBytes("3.png", bigSign.Save());
 File.WriteAllBytes("4.png", lastFrame.Save());
 
 
-var gif = AnimatedGif.AnimatedGif.Create("result.gif", 250);
-gif.AddFrame("1.png");
-gif.AddFrame("2.png");
-gif.AddFrame("danger sign.png");
-gif.AddFrame("4.png");
+var frames = new[]
+{
+    "1.png",
+    "2.png",
+    "3.png",
+    "4.png",
+};
+
+using var gif = Image.Load<Rgba32>(frames[0]);
+gif.Frames.RootFrame.Metadata
+    .GetGifMetadata()
+    .FrameDelay = 25;
+
+foreach (var path in frames.Skip(1))
+{
+    var source = Image.Load<Rgba32>(path);
+    source.Frames.RootFrame.Metadata.GetGifMetadata().FrameDelay = 25;
+    gif.Frames.AddFrame(source.Frames.RootFrame);
+}
+
+var encoder = new GifEncoder();
+
+const string resultPath = "result.gif";
+gif.Save(resultPath, encoder);
 
 
-    
-
-//
 // //open image viewer
 // var psi = new ProcessStartInfo
 // {
-//     FileName = @"result.png",
+//     FileName = resultPath,
 //     UseShellExecute = true
 // };
 // Process.Start(psi);
+await OpenImage.Open(resultPath);

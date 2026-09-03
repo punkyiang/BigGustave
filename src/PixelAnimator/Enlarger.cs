@@ -4,6 +4,8 @@ namespace PixelAnimator;
 
 public static class Enlarger
 {
+    public static PngBuilder Enlarge(this Png file, int scale) => PngBuilder.FromPng(file).Enlarge(scale);
+
     public static PngBuilder Enlarge(this PngBuilder file, int scale)
     {
         var newFile = PngBuilder.Create(file.Width * scale, file.Height * scale, file.HasAlphaChannel);
